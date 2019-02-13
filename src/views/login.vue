@@ -46,6 +46,15 @@
                     height: 40px;
                     margin-bottom: 10px;
                     position: relative;
+                    .aaaaa {
+                        position: absolute;
+                        left: 10px;
+                        top: 10px;
+                        position: absolute;
+                        background: #f8f8f8;
+                        color: #000;
+                        font-size: 20px;
+                    }
                     .passBox{
                         position: absolute;
                         overflow: hidden;
@@ -153,30 +162,30 @@
                     <div class="inputBox">
                         <input type="text" v-model="userName" placeholder="请输入用户名">
                     </div>
-                    <div class="inputBox" style="position: relative;">
-                        <input type="text" v-model="userPasswordone" @focus="showPassword()" @keyup="keyPassword()" @blur="closePassword()" placeholder="请输入密码">
-                        <div class="passBox" v-if="showPass">
-                            <div class="passBoxList flexBetween cursor" v-for="item in userInfo"  @mouseover="getList(item)">
+                    <div class="inputBox">
+                        <input type="password" v-model="userPassword" @focus="showPassword()" @keyup="keyPassword()" @blur="closePassword()" placeholder="请输入密码">
+                        <!-- <div class="passBox" v-if="showPass">
+                            <div class="passBoxList flexBetween cursor" v-for="(item, index) in userInfo" :key="index" @mouseover="getList(item)">
                                 <div class="left">{{item.name}}</div>
                                 <div class="right">●●●●●●</div>
                             </div>
                             <div class="passBoxListone flexBetween">
                                 <div class="left">请选择用户名</div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
-                    <div class="inputBox">
+                    <!-- <div class="inputBox">
                         <input type="password" placeholder="请输入密码">
-                    </div>
+                    </div> -->
                     <div class="inputBox flexBetween">
                         <div class="passLeft">
-                            <img class="selectIcon cursor" @click='selectPass = !selectPass' v-if="selectPass" src="../assets/images/greyZan.png">
-                            <img class="selectIcon cursor" @click='selectPass = !selectPass' v-if="!selectPass" src="../assets/images/yellowZan.png">记住密码
+                            <img class="selectIcon cursor" @click='selectPass = !selectPass' v-if="!selectPass" src="../assets/images/greyZan.png">
+                            <img class="selectIcon cursor" @click='selectPass = !selectPass' v-if="selectPass" src="../assets/images/yellowZan.png">记住密码
                         </div>
                         <!--<div class="passRight">找回密码</div>-->
                     </div>
                     <div class="inputBox">
-                        <span class="login cursor">登录</span>
+                        <span class="login cursor" @click='goLogin()'>登录</span>
                     </div>
                     <div class="goRester cursor" @click="goRegister()">还没有账号？立即申请</div>
                 </div>
@@ -197,30 +206,54 @@
 </template>
 
 <script>
+import Service from '../common/service'
+import Util from '../common/util'
     export default {
         name: "login",
         data(){
             return{
-                userPasswordone: '',
+                passLen: 0,
                 userName: '',
                 userPassword: '',
-                password: '444444',
-                selectPass: false,
+                selectPass: true,
                 showPass: false,
-                userInfo: [{password:'1111',name: '复古风格非'},{password:'44444',name: '复古风格非'},{password:'1111',name: '复古风格非'}]
+                sha256: ''
             }
         },
         created(){
-            let sha256 = require("js-sha256").sha256;//这里用的是require方法
-            this.password = sha256('44444');//要加密的密码
-            console.log(this.password);//这就是你加密之后的密码
+            this.sha256 = require("js-sha256").sha256;//这里用的是require方法
+            if(Util.localStorageUtil.get('userInfo')){
+                console.log(Util.localStorageUtil.get('userInfo'))
+                this.userName = Util.localStorageUtil.get('userInfo').name;
+                this.userPassword = Util.localStorageUtil.get('userInfo').password;
+            }
+        },
+        watch:{
+            "selectPass":function(){
+                if(this.selectPass){
+                    if((this.userName) && (this.userPassword)){
+                        var userInfo = {'name': this.userName,'password': this.userPassword}
+                        Util.localStorageUtil.set('userInfo',userInfo)
+                    }
+                }
+            }
         },
         methods: {
+            goLogin(){
+                 if(this.selectPass){
+                    if((this.userName) && (this.userPassword)){
+                        var userInfo = {'name': this.userName,'password': this.userPassword}
+                        Util.localStorageUtil.set('userInfo',userInfo)
+                    }
+                }
+
+            },
             showPassword(){
                 this.showPass = true;
             },
-            keyPassword(){
-                if(this.userPasswordone == ''){
+            keyPassword(event){
+                console.log(this.userPassword);
+                if(this.userPassword == ''){
                     this.showPass = true;
                 }else{
                     this.showPass = false;
@@ -230,9 +263,7 @@
                 // let sha256 = require("js-sha256").sha256//这里用的是require方法
                 // this.password = sha256(this.passWord)//要加密的密码
                 // console.log(this.password)//这就是你加密之后的密码
-                this.userName = item.name;
-                this.userPasswordone = '●●●●●●';
-                this.userPassword = item.password;
+            
                 console.log(item);
             },
             closePassword(){
