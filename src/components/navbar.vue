@@ -115,6 +115,7 @@
         name: "navbar",
         data() {
             return{
+                url: '',
                 routerData:[{
                     name:'首页',
                     router:'/homepage',
@@ -141,6 +142,8 @@
                     isRouter: false,
                 }]
             }
+        },
+        created(){
         },
         methods: {
             goRegister(){

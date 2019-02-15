@@ -100,9 +100,9 @@
                                 <el-select v-model="questionType" placeholder="请选择问题类型" class="inputText font14 fl">
                                     <el-option
                                             v-for="item in options"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
                                     </el-option>
                                 </el-select>
                                 <p class="warmText font12" v-if="!booleanData.hasType">请选择问题类型</p>
@@ -135,6 +135,7 @@
 
 <script>
     import Service from '../common/service'
+    import Util from '../common/util'
     export default {
         name: "customermessage",
         data(){
@@ -150,7 +151,7 @@
                     hasPhone: true
                 },
                 questionType: '',
-                options:[{label:'法律咨询',value: 1}],
+                options:[],
                 selectId: 1,
                 url: '',
                 downLoadData: [],
@@ -186,6 +187,7 @@
             this.changeRouter()
         },
         created(){
+            this.getQuestionType()
         },
         watch:{
             "description":function(){
@@ -220,6 +222,18 @@
             }
         },
         methods:{
+            getQuestionType(){
+                Service.helper().getusermessageType({
+                }).then(response => {
+                    if(response.errorCode == 0){
+                        if(response.data){
+                            this.options = response.data;
+                        }
+                    }else{
+                    }
+                }, err => {
+                });
+            },
             goSubmit(){
                 if(this.questionType == ''){
                     this.booleanData.hasType = false;
@@ -252,6 +266,13 @@
                     phone: this.phone
                 }).then(response => {
                     if(response.errorCode == 0){
+                        this.$message({
+                            message: '提交成功，我们将尽快给您回复。',
+                            type: 'success'
+                        });
+                        setTimeout(function(){
+                            window.location.href = Util.localStorageUtil.get('url')
+                        },3000)
                     }else{
                     }
                 }, err => {

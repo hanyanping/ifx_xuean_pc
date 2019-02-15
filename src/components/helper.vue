@@ -154,6 +154,7 @@
 </template>
 
 <script>
+    import Util from '../common/util'
     export default {
         name: "helper",
         data(){
@@ -199,6 +200,7 @@
                 $(".dialog").css({"display":"none"})
             },
             goMessage(){
+                Util.localStorageUtil.set('url',window.location.href)
                 this.$router.push({'path':'/customermessage'})
             },
             changeRouter(){

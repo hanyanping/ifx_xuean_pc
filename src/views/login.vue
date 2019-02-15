@@ -91,10 +91,15 @@
                     .passLeft{
                         color: #000;
                         font-size: 12px;
-                        .selectIcon{
-                            height: 14px;
-                            width:14px;
+                        .iconfont{
+                            font-size: 14px;
                             margin-right: 6px;
+                        }
+                        .icon-xuanze{
+                            color: #e5e5e5;
+                        }
+                        .icon-checked{
+                            color: #45b8c8;
                         }
                     }
                     .passRight{
@@ -111,6 +116,9 @@
                         text-align: center;
                         color: #fff;
                         font-size: 16px;
+                    }
+                    .login:hover{
+                        background: rgba(69,184,200,0.8)
                     }
                 }
                 .goRester{
@@ -164,23 +172,12 @@
                     </div>
                     <div class="inputBox">
                         <input type="password" v-model="userPassword" @focus="showPassword()" @keyup="keyPassword()" @blur="closePassword()" placeholder="请输入密码">
-                        <!-- <div class="passBox" v-if="showPass">
-                            <div class="passBoxList flexBetween cursor" v-for="(item, index) in userInfo" :key="index" @mouseover="getList(item)">
-                                <div class="left">{{item.name}}</div>
-                                <div class="right">●●●●●●</div>
-                            </div>
-                            <div class="passBoxListone flexBetween">
-                                <div class="left">请选择用户名</div>
-                            </div>
-                        </div> -->
                     </div>
-                    <!-- <div class="inputBox">
-                        <input type="password" placeholder="请输入密码">
-                    </div> -->
                     <div class="inputBox flexBetween">
                         <div class="passLeft">
-                            <img class="selectIcon cursor" @click='selectPass = !selectPass' v-if="!selectPass" src="../assets/images/greyZan.png">
-                            <img class="selectIcon cursor" @click='selectPass = !selectPass' v-if="selectPass" src="../assets/images/yellowZan.png">记住密码
+                            <i class="iconfont  icon-xuanze cursor" @click='selectPass = !selectPass' v-if="!selectPass" ></i>
+                            <i class="iconfont icon-checked cursor" @click='selectPass = !selectPass' v-if="selectPass"></i>
+                            <span>记住密码</span>
                         </div>
                         <!--<div class="passRight">找回密码</div>-->
                     </div>
@@ -240,6 +237,8 @@ import Util from '../common/util'
         },
         methods: {
             goLogin(){
+                this.$router.push({'path':decodeURI(this.$route.query.callback)})
+
                  if(this.selectPass){
                     if((this.userName) && (this.userPassword)){
                         var userInfo = {'name': this.userName,'password': this.userPassword}
@@ -270,7 +269,7 @@ import Util from '../common/util'
                 this.showPass = false;
             },
             goRegister(){
-                this.$router.push({'path':'/register'})
+                this.$router.push({'path':'/register',query:{callback:this.$route.query.callback}})
             },
             goHome(){
                 this.$router.push({'path':'/'})

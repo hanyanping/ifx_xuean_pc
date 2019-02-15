@@ -115,6 +115,18 @@ export default {
     },
     helper(){
             return {
+                getShowLawHelpList: function (data) {//法律援助列表
+                    return getResource({
+                        url: '/xunan/lawHelp/showLawHelpList',
+                        method: 'get'
+                    }, data)
+                },
+                getShowLawHelpDetail: function (data) {//法律援助列表
+                    return getResource({
+                        url: '/xunan/lawHelp/showLawHelpCenterDetail',
+                        method: 'get'
+                    }, data)
+                },
                 isDianzan: function (data) {//点赞
                     return getResource({
                         url: '/xunan/helpCenter/likesSiteHelpCenter',
@@ -124,6 +136,13 @@ export default {
                 showSiteHelpCenter: function (data) {//帮助中心问题列表
                     return getResource({
                         url: '/xunan/helpCenter/showSiteHelpCenter',
+                        method: 'get'
+                    }, data)
+                },
+
+                getusermessageType: function (data) {//问题类型
+                    return getResource({
+                        url: '/xunan/messageSend/sendMessageOption',
                         method: 'get'
                     }, data)
                 },
@@ -310,23 +329,18 @@ export default {
 
         }
     },
-    order() {
+    video() {
         return {
-            postOrder: function (data) {
+            getSchoolTypeList: function (data) {
                 return getResource({
-                    url: '/ord/order',
-                    method: 'post'
-                }, data)
-            },
-            getOrderList: function (data) {
-                return getResource({
-                    url: '/ord/order',
+                    url: '/xunan/safeSchool/getSchoolTypeList',
                     method: 'get'
                 }, data)
             },
-            getorderDetail: function (data, key) {
+
+            getVideoDetail: function (data) {
                 return getResource({
-                    url: `/ord/order/${key}`,
+                    url: `/xunan/download/md5`,
                     method: 'get'
                 }, data)
             },

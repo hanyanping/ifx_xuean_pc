@@ -17,7 +17,9 @@ import register from '@/views/register'
 import registersuccess from '@/views/registersuccess'
 import download from '@/views/download'
 import customermessage from '@/views/customermessage'
-
+import legaldetail from '@/views/legaldetail'
+import videoDetail from '@/views/videoDetail'
+import applicaninfo from '@/views/applicaninfo'
 Vue.use(Router)
 export default new Router({
     mode: 'history',
@@ -44,6 +46,11 @@ export default new Router({
                     component: teachertrain
                 },
                 {
+                    path: 'videoDetail',
+                    name: 'videoDetail',
+                    component: videoDetail
+                },
+                {
                     path: 'researchStudy',
                     name: 'researchStudy',
                     component: researchStudy
@@ -66,6 +73,11 @@ export default new Router({
                     path: 'legalaid',
                     name: 'legalaid',
                     component: legalaid
+                },
+                {
+                    path: 'legaldetail/:id',
+                    name: 'legaldetail',
+                    component: legaldetail
                 },
                 {
                     path: 'safetyschool',
@@ -109,6 +121,11 @@ export default new Router({
             name: 'registersuccess',
             component: registersuccess
         },
+        {
+            path: '/applicaninfo',
+            name: 'applicaninfo',
+            component: applicaninfo
+        }
 
     ]
 

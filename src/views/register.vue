@@ -30,10 +30,19 @@
                         margin-bottom: 60px;
                     }
                     .inputBox{
+                        position: relative;
                         text-align: left;
                         margin-bottom: 10px;
+                        .warmBox{
+                            position: absolute;
+                            margin-left: 300px;
+                            top: 10px;
+                            .warmText{
+
+                            }
+                        }
                         .inputText{
-                            width:100%;
+                            width:80%;
                             height: 40px!important;
                             line-height: 40px;
                             color: #000;
@@ -64,10 +73,15 @@
                             color: #45b8c8;
                             font-size: 14px;
                         }
-                        .selectIcon{
-                            height: 14px;
-                            width:14px;
+                        .iconfont{
+                            font-size: 14px;
                             margin-right: 6px;
+                        }
+                        .icon-xuanze{
+                            color: #e5e5e5;
+                        }
+                        .icon-checked{
+                            color: #45b8c8;
                         }
                         .selectText{
                             font-size: 12px;
@@ -84,6 +98,9 @@
                             background-color: #45b8c8;
                             border-radius: 20px;
                             margin-top: 26px;
+                        }
+                        .registerButton:hover{
+                            background: rgba(69,184,200,0.8);
                         }
                     }
                 }
@@ -126,10 +143,12 @@
                 <div class="registerBox">
                     <div class="registerTitle">欢迎注册学安通</div>
                     <div class="inputBox">
-                        <input class="inputText" type="text" placeholder="请设置登录名">
+                        <input class="inputText" v-model="name" type="text" placeholder="请设置登录名">
+                        <div class="warmBox"><span class="warmText">555555</span></div>
                     </div>
                     <div class="inputBox">
-                        <input class="inputText" type="password" placeholder="设置8-12位数字+英文的登录密码">
+                        <input class="inputText" v-model="password" type="password" @blur="changePassword" placeholder="请设置登录密码">
+                        <div class="warmBox"><span class="warmText">555555</span><span class="warmText">555555</span><span class="warmText">555555</span></div>
                     </div>
                     <div class="inputBox">
                         <input class="inputText" type="password" placeholder="请再次输入您的密码">
@@ -142,12 +161,12 @@
                         <span class="cursor sendCode">发送验证码</span>
                     </div>
                     <div class="inputBox">
-                        <img class="selectIcon cursor" @click='selectPass = !selectPass' v-if="selectPass" src="../assets/images/greyZan.png">
-                        <img class="selectIcon cursor" @click='selectPass = !selectPass' v-if="!selectPass" src="../assets/images/yellowZan.png">
+                        <i class="iconfont  icon-xuanze cursor" @click='selectPass = !selectPass' v-if="!selectPass" ></i>
+                        <i class="iconfont icon-checked cursor" @click='selectPass = !selectPass' v-if="selectPass"></i>
                         <span class="cursor selectText">我已阅读并同意《学安通网站服务协议》协议条款</span>
                     </div>
                     <div class="inputBox">
-                        <span class="registerButton cursor">
+                        <span class="registerButton cursor" @click="submit()">
                             立即注册
                         </span>
                     </div>
@@ -173,14 +192,70 @@
         data(){
             return{
                 selectPass: false,
+                name: '',
+                password: ''
             }
         },
+        watch:{
+          'password':function(){
+
+          }
+        },
         methods: {
+            changePassword(){
+                var reg = /^[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、0-9a-zA-Z]+$/;
+                var num = false,Capital = false,Lowercase = false,specail = false ;
+                if(reg.test(this.password)){
+                    var reg1 = /^[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]+$/;
+                    var reg2 = /^[a-z]+$/;
+                    var reg3 = /^[A-Z]+$/;
+                    var reg4 = /^[0-9]+$/;
+                    var passWord = [];
+                     passWord = this.password.split('');
+                    for(var i=0;i<passWord.length;i++){
+                        if(reg1.test(passWord[i])){
+                            specail = true;
+                        }
+                        if(reg2.test(passWord[i])){
+                            Lowercase = true;
+                        }
+                        if(reg3.test(passWord[i])){
+                            Capital = true;
+                        }
+                        if(reg4.test(passWord[i])){
+                            num = true;
+                        }
+                    }
+                    if((num&&!Capital&&!Lowercase&&!specail) || (!num&&Capital&&!Lowercase&&!specail) || (!num&&!Capital&&Lowercase&&!specail)|| (!num&&!Capital&&!Lowercase&&specail)){
+                        alert(1)
+                    }
+                    if((!num&&!Capital&&Lowercase&&specail) || (!num&&Capital&&!Lowercase&&specail) || (!num&&Capital&&Lowercase&&!specail)|| (num&&!Capital&&!Lowercase&&specail)|| (num&&!Capital&&Lowercase&&!specail)|| (num&&Capital&&!Lowercase&&!specail)){
+                        alert(2)
+                    }
+                    if((!num&&Capital&&Lowercase&&specail) || (num&&!Capital&&Lowercase&&specail) || (num&&Capital&&!Lowercase&&specail)|| (num&&Capital&&Lowercase&&!specail)|| (num&&Capital&&Lowercase&&specail)){
+                        alert(3)
+                    }
+                }
+            },
             goRegister(){
                 this.$router.push({'path':'/register'})
             },
             goHome(){
                 this.$router.push({'path':'/'})
+            },
+            submit(){
+                // var reg= /^([0-9]+[a-zA-Z]+[_|\-]?$)|^[a-zA-Z_\-]+$|^[a-zA-Z_\-]+$/ ;
+                // var reg= /^([0-9]+[a-zA-Z])|^([0-9a-zA-Z_|\-]+$)|^([a-zA-Z_|\-]+$)|^([a-zA-Z]+$)/ ;
+                // var reg=/^((?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{4,20}$)/;//数字和字母的组合
+                var reg=/^((?![0-9_|\-]+$)(?![a-zA-Z]+$)[0-9A-Za-z_|\-]{4,20}$)/;//数字字母—组合
+                // var reg=/^((?![_|\-]+$)(?![a-zA-Z]+$)[a-zA-Z_|\-]{4,20}$)/;//—和字母的组合
+                // var reg=/^[a-zA-Z]{4,20}$/;//字母的组合
+                // var reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{4,20}$|^(?![0-9_|\-]+$)(?![a-zA-Z]+$)[0-9A-Za-z_|\-]{4,20}$|^((?![_|\-]+$)(?![a-zA-Z]+$)[a-zA-Z_|\-]{4,20}$)|^[a-zA-Z]{4,20}$/
+                console.log(this.name)
+                console.log(reg.test(this.name))
+                if(!reg.test(this.name)){
+                    alert(4444)
+                }
             }
         }
     }

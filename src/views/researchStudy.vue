@@ -4,7 +4,6 @@
         height: 100%;
     }
     .researchStudyContent{
-
         .back{
             width: 100%;
             height: 257px;
@@ -178,7 +177,7 @@
                                 <p class="rightText"><span class="rightSpan">适用人群：10-28周岁</span><span>价格：2元/人/天起</span></p>
                             </div>
                             <div class="toubao cursor" v-if="index==0" @click="showAppiont = true">预约定制</div>
-                            <div class="toubao cursor" v-else>立即投保</div>
+                            <div class="toubao cursor" v-else @click="goToubao()">立即投保</div>
                         </div>
                         <div class="xianzhong flex" v-if="ite.money.length == 1" v-for="(ite,inde) in item.xianzhong">
                             <div class="xianzhongName" >{{ite.name}}</div>
@@ -223,6 +222,7 @@
         },
         data() {
             return{
+                userId: '',
                 showAppiont: false,
                 listData: [
                     {tag: '大地保险',img:require('../assets/images/1549941871.jpg'),xianzhong:
@@ -275,6 +275,12 @@
             this.changeRouter()
         },
         methods:{
+            goToubao(){
+                var url = encodeURI('/homepage')
+                if(!this.userId){
+                    this.$router.push({"path":'/login',query:{callback:url}})
+                }
+            },
             changeshowAppiont(val){
                 this.showAppiont = val
             },

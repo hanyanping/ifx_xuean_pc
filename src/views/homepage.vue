@@ -31,6 +31,12 @@
                 color: #fff;
                 font-size: 14px;
                 margin: 50px auto 0;
+                a{
+                    color: #fff;
+                    display: inline-block;
+                    width: 120px;
+                    height: 40px;
+                }
             }
             .serverContent{
                 padding-bottom: 70px;
@@ -343,6 +349,12 @@
                 color: #fff;
                 font-size: 14px;
                 margin: 50px auto 0;
+                a{
+                    color: #fff;
+                    display: inline-block;
+                    width: 120px;
+                    height: 40px;
+                }
             }
         }
     }
@@ -399,14 +411,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="moreClass cursor">查看更多</div>
+                <div class="moreClass cursor"><router-link to="/safetyschool">查看更多</router-link></div>
             </div>
         </div>
         <div class="contentBox legalBox">
             <div class="contaner">
                 <div class="title">法律援助</div>
                 <div class="legalContent flexContent">
-                    <div  class="legalAid" v-for="(item,index) in lawHelp">
+                    <div  class="legalAid" v-for="(item,index) in lawHelp" @click="goDetail(item.id)">
                         <div  class="textbox cursor">
                             <div  class='textBac'
                                  :style="{backgroundImage: 'url(' + item.pictureurl + ')',backgroundRepeat: 'no-repeat',backgroundPosition:'center top'}"></div>
@@ -416,23 +428,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="moreClass cursor">查看更多</div>
+                <div class="moreClass cursor" ><router-link to="/legalaid">查看更多</router-link></div>
             </div>
         </div>
         <helper></helper>
-        <!--<div class="saveClass">-->
-            <!--<div class="classTitle">安全课堂</div>-->
-            <!--<div class="classContent contaner clear">-->
-                <!--<div v-for="(item,index) in classData" class="classContentboxone cursor fl">-->
-                    <!--<div class="classBox">-->
-                        <!--<img :src="item.img">-->
-                        <!--<i class="mod_cover__mask"></i>-->
-                        <!--<i class="mod_cover__icon_play js_play"></i>-->
-                    <!--</div>-->
-                    <!--<p class="classText">{{item.title}}</p>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
+
     </div>
 </template>
 
@@ -535,6 +535,9 @@
             this.changeRouter()
         },
         methods:{
+            goDetail(id){
+                this.$router.push({'path':'/legaldetail/'+id})
+            },
             getHome(){
                 Service.home().getShowHomeAll({
                     bannerSize: 4,

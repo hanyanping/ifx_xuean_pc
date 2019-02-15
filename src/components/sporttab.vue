@@ -1,73 +1,73 @@
 <style rel="stylesheet/scss" lang="scss"  scoped>
-.practicetab{
-    width: 100%;
-    height: 100%;
-    border-top: 1px solid #e5e5e5;
-    background: #fff;
-    .tabBox{
-        height: 54px;
-        line-height: 54px;
-        .menu{
-            position: relative;
-            width: 126px;
-            margin-right: 5px;
-            .menuTitle:hover{
-                color: #45b8c8;
-            }
-            .menuTitle{
-                color: #000;
-                font-size: 16px;
-                .icon-zhankai_m{
-                    font-size: 16px;
+    .sporttab{
+        width: 100%;
+        height: 100%;
+        border-top: 1px solid #e5e5e5;
+        background: #fff;
+        .tabBox{
+            height: 54px;
+            line-height: 54px;
+            .menu{
+                position: relative;
+                width: 100px;
+                margin-right: 5px;
+                .menuTitle:hover{
                     color: #45b8c8;
-                    display: inline-block;
-                    vertical-align: middle;
-                    margin-left: 5px
                 }
-                .icon-shouqi_m{
+                .menuTitle{
                     color: #000;
                     font-size: 16px;
-                    margin-left: 5px;
-                    display: inline-block;
-                    vertical-align: middle;
-                }
-            }
-            .ulBox{
-                border-top: 1px solid #ececec;
-                position: absolute;
-                background: #fff;
-                width: 126px;
-                min-height: 60px;
-                font-size: 16px;
-                padding: 15px 0;
-                text-align: center;
-                margin-top: -2px;
-                .menuItem{
-                    height: 60px;
-                    line-height: 60px;
-                    a{
+                    .icon-zhankai_m{
+                        font-size: 16px;
+                        color: #45b8c8;
                         display: inline-block;
-                        width:100%;
+                        vertical-align: middle;
+                        margin-left: 5px
+                    }
+                    .icon-shouqi_m{
+                        color: #000;
+                        font-size: 16px;
+                        margin-left: 5px;
+                        display: inline-block;
+                        vertical-align: middle;
+                    }
+                }
+                .ulBox{
+                    border-top: 1px solid #ececec;
+                    position: absolute;
+                    background: #fff;
+                    width: 126px;
+                    min-height: 60px;
+                    font-size: 16px;
+                    padding: 15px 0;
+                    text-align: center;
+                    margin-top: -2px;
+                    .menuItem{
                         height: 60px;
                         line-height: 60px;
-                        color: #000;
+                        a{
+                            display: inline-block;
+                            width:100%;
+                            height: 60px;
+                            line-height: 60px;
+                            color: #000;
+                        }
                     }
-                }
-                .menuItem:hover{
-                    a{
-                        color: #45b8c8;
+                    .menuItem:hover{
+                        a{
+                            color: #45b8c8;
+                        }
                     }
                 }
             }
-        }
-        .activeMenu{
-            color: #45b8c8!important;
+            .activeMenu{
+                color: #45b8c8!important;
+            }
         }
     }
-}
 </style>
 <template>
-    <div class="practicetab">
+    <div class="sporttab">
         <div class="contaner">
             <ul class="tabBox clear">
                 <li class="menu cursor fl" v-for="(item,index) in tabData" @mouseenter="inStyle(item,'listMenu'+index,index)" @mouseleave="outStyle()">
@@ -90,20 +90,26 @@
 
 <script>
     export default {
-        name: "practicetab",
+        name: "sporttab",
         data(){
             return{
                 tabData:[
                     {
-                        name:'研学旅行',
-                        router: '/researchStudy',
+                        name:'足球',
+                        router: '/sport',
                         showMenu: false,
-                        childData:[{value:'0',lable:'组织方',router:'/researchStudy',showMenuList: false},
-                        {value:'1',lable:'研学基地',router:'/studybase',showMenuList: false}]
+                        childData:[{value:'0',lable:'比赛险',router:'/sport',showMenuList: false},
+                            {value:'1',lable:'训练险',router:'/studybase',showMenuList: false}]
                     },
                     {
-                        name:'社会实践',
+                        name:'滑雪',
                         router: '/socialpractice',
+                        showMenu: false,
+                        childData:[{value:'0',lable:'社会实践',router:'/socialpractice',showMenuList: false}]
+                    },
+                    {
+                        name:'蹦极',
+                            router: '/socialpractice',
                         showMenu: false,
                         childData:[{value:'0',lable:'社会实践',router:'/socialpractice',showMenuList: false}]
                     }
@@ -157,7 +163,7 @@
                     }
                 }
                 for(let i = 0;i< this.tabData.length;i++){
-                        $('#listMenu'+i).slideUp(100);
+                    $('#listMenu'+i).slideUp(100);
                 }
             },
             inStyle(item,idName,index){

@@ -311,7 +311,7 @@
                     e.stopPropagation();
                 else
                 //否则，我们需要使用IE的方式来取消事件冒泡
-                    window.event.cancelBubble = true;
+                window.event.cancelBubble = true;
                 item.showCode = true;
             },
             changeRouter(){
