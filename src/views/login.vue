@@ -237,14 +237,47 @@ import Util from '../common/util'
         },
         methods: {
             goLogin(){
-                this.$router.push({'path':decodeURI(this.$route.query.callback)})
-
+                var reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{4,20}$|^(?![0-9_|\-]+$)(?![a-zA-Z]+$)[0-9A-Za-z_|\-]{4,20}$|^((?![_|\-]+$)(?![a-zA-Z]+$)[a-zA-Z_|\-]{4,20}$)|^[a-zA-Z]{4,20}$/
+                if(this.userName.length<4 ||  this.userName.length>20){
+                    this.$message.error('请输入正确的登录名')
+                    return;
+                }
+                if(!reg.test(this.userName)){
+                    this.$message.error('请输入正确的登录名')
+                    return;
+                }
+                var reg1 = /^[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、0-9a-zA-Z]+$/;
+                if(!reg1.test(this.userPassword)){
+                    this.$message.error('请输入正确的密码')
+                    return
+                }
+                if(this.userPassword.length<8 || this.userPassword.length>20){
+                    this.$message.error('请输入正确的密码')
+                    return
+                }
                  if(this.selectPass){
                     if((this.userName) && (this.userPassword)){
                         var userInfo = {'name': this.userName,'password': this.userPassword}
                         Util.localStorageUtil.set('userInfo',userInfo)
                     }
-                }
+                }else{
+                     Util.localStorageUtil.clear('userInfo',userInfo)
+                 }
+                Service.login().login({
+                    username: this.userName,
+                    password: this.userPassword
+                }).then(response => {
+                    if(response.errorCode == 0){
+                        if(this.$route.query.callback){
+                            this.$router.push({'path':decodeURI(this.$route.query.callback)})
+                        }else{
+                            // this.$router.push({'path':'/'})
+                        }
+                    }else{
+                        this.$message.error(response.message);
+                    }
+                }, err => {
+                });
 
             },
             showPassword(){

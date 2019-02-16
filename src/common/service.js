@@ -106,12 +106,28 @@ const getResource = (opts, data) => {
 };
 
 export default {
-    login(data) {
+    login() {
         // 登录
-        return getResource({
-            url: '/oauth2/token',
-            method: 'post'
-        }, data)
+        return{
+            getCode: function (data) {//法律援助列表
+                return getResource({
+                    url: '/xunan/enterprise/account/reg/code',
+                    method: 'post'
+                }, data)
+            },
+            register: function (data) {//法律援助列表
+                return getResource({
+                    url: '/xunan/enterprise/account/reg',
+                    method: 'post'
+                }, data)
+            },
+            login: function (data) {//法律援助列表
+                return getResource({
+                    url: '/xunan/enterprise/account/login',
+                    method: 'post'
+                }, data)
+            },
+        }
     },
     helper(){
             return {

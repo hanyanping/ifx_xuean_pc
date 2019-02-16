@@ -35,10 +35,48 @@
                         margin-bottom: 10px;
                         .warmBox{
                             position: absolute;
-                            margin-left: 300px;
+                            margin-left: 280px;
                             top: 10px;
+                            min-width:110px;
+                            font-size: 12px;
                             .warmText{
 
+                            }
+                        }
+                        .passStyle{
+                            border: 1px solid #e5e5e5;
+                            border-radius: 20px;
+                            width:104px;
+                            height: 30px;
+                            font-size: 14px;
+                            .warmText{
+                                position: relative;
+                                padding: 6px 10px;
+                                display: inline-block;
+
+                            }
+                            .warmTextheight{
+                                padding: 6px 10px;
+                            }
+                            .redText{
+                                color: #f00;
+                            }
+                            .originText{
+                                color: #ff0;
+                            }
+                            .blueText{
+                                color: blue;
+                            }
+                            .warmText:after{
+                                position: absolute;
+                                margin-left: 7px;
+                                display: inline-block;
+                                content: '';
+                                height: 14px;
+                                width: 2px;
+                                background: #e5e5e5;
+                                border-radius: 1px;
+                                top: 8px;
                             }
                         }
                         .inputText{
@@ -143,22 +181,27 @@
                 <div class="registerBox">
                     <div class="registerTitle">欢迎注册学安通</div>
                     <div class="inputBox">
-                        <input class="inputText" v-model="name" type="text" placeholder="请设置登录名">
-                        <div class="warmBox"><span class="warmText">555555</span></div>
+                        <input class="inputText" v-model="name" @change="watchName()" type="text" placeholder="请设置登录名">
+                        <div class="warmBox" v-if="validateName"><span class="warmText" >请输入正确的登录名</span></div>
                     </div>
                     <div class="inputBox">
-                        <input class="inputText" v-model="password" type="password" @blur="changePassword" placeholder="请设置登录密码">
-                        <div class="warmBox"><span class="warmText">555555</span><span class="warmText">555555</span><span class="warmText">555555</span></div>
+                        <input class="inputText" v-model="password" type="password" @keyup="changePassword" placeholder="请设置登录密码">
+                        <div class="warmBox passStyle"><span :class="isLower?'warmText redText':'warmText'">弱</span><span :class="isMiddle?'warmText originText':'warmText'">中</span><span :class="isHeight?'warmTextheight blueText':'warmTextheight'" >高</span></div>
                     </div>
                     <div class="inputBox">
-                        <input class="inputText" type="password" placeholder="请再次输入您的密码">
+                        <input class="inputText" v-model="repassword" @change="watchPassword()" type="password" placeholder="请再次输入您的密码">
+                        <div class="warmBox" v-if="validatepassword"><span class="warmText" >密码不一致</span></div>
+
                     </div>
                     <div class="inputBox">
-                        <input class="inputText" type="text" placeholder="请输入手机号码">
+                        <input class="inputText" v-model='phone' type="text" @change="watchPhone()" placeholder="请输入手机号码">
+                        <div class="warmBox" v-if="validatephone"><span class="warmText" >请输入正确的手机号</span></div>
+
                     </div>
                     <div class="inputBox">
-                        <input class="verification" type="text" placeholder="请输入手机号码">
-                        <span class="cursor sendCode">发送验证码</span>
+                        <input class="verification" v-model="verticalcode" type="text" placeholder="请输入验证码">
+                        <span class="cursor sendCode curson" v-if='!isCode' @click="getCode($event)" >{{showCode}}</span>
+                        <span class="cursor sendCode curson" v-if='isCode' >{{showCode}}</span>
                     </div>
                     <div class="inputBox">
                         <i class="iconfont  icon-xuanze cursor" @click='selectPass = !selectPass' v-if="!selectPass" ></i>
@@ -187,13 +230,27 @@
     </div>
 </template>
 <script>
+    import Service from '../common/service'
+    import patternRules from '../common/patternRules'
     export default {
         name: "register",
         data(){
             return{
-                selectPass: false,
+                validateName: false,
+                validatephone: false,
+                validatepassword: false,
+                isMiddle: false,
+                isLower: false,
+                isHeight: false,
+                selectPass: true,
                 name: '',
-                password: ''
+                password: '',
+                repassword: '',
+                verticalcode: '',
+                phone: '',
+                showCode: '发送验证码',
+                time: 60,
+                isCode: false,
             }
         },
         watch:{
@@ -202,39 +259,141 @@
           }
         },
         methods: {
+            watchPassword(){
+                if(this.repassword != this.password){
+                    this.validatepassword = true;
+                }else{
+                    this.validatepassword = false;
+                }
+            },
+            watchPhone(){
+                if (!((patternRules.mobile).test(this.phone))) {
+                    this.validatephone = true;
+                }else{
+                    this.validatephone = false;
+                }
+            },
+            watchName(){
+                var reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{4,20}$|^(?![0-9_|\-]+$)(?![a-zA-Z]+$)[0-9A-Za-z_|\-]{4,20}$|^((?![_|\-]+$)(?![a-zA-Z]+$)[a-zA-Z_|\-]{4,20}$)|^[a-zA-Z]{4,20}$/
+                if(this.name.length>3 && this.name.length<21){
+                    if(!reg.test(this.name)){
+                        this.validateName = true;
+                    }else{
+                        this.validateName = false;
+                    }
+                }else{
+                    this.validateName = true;
+                }
+
+            },
+            setCookie(name, value, day) {
+                //当设置的时间等于0时，不设置expires属性，cookie在浏览器关闭后删除
+                var expires = day * 1000;
+                var date = new Date(+new Date() + expires);
+                document.cookie = name + "=" + escape(value) + ";expires=" + date.toUTCString();
+            },
+            getCookie(name) {
+                var arr;
+                var reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+                if (arr = document.cookie.match(reg)) {
+                    return unescape(arr[2]);
+                }
+                else {
+                    return null;
+                }
+            },
+            getCode(el){
+                if (!((patternRules.mobile).test(this.phone))) {
+                    this.$message.error('请输入正确手机号！');
+                    return false
+                } else {
+                    let _that = this;
+                    var c = document.cookie.indexOf("cookieTime=");
+
+                    if (c != -1) {
+                        this.time = this.getCookie('cookieTime');
+                    } else {
+                        this.time = '60'
+                    }
+                    if (this.time >= 0 && this.isCode) {
+                        this.time = '60';
+                        return false
+                    } else {
+                        //调用接口
+                        Service.login().getCode({
+                            phone: this.phone
+                        }).then(response => {
+                            clearInterval(t);       //停止计时器
+                            el.target.innerHTML = _that.time + '秒后重试';
+                            this.isCode = true;
+                            var t = setInterval(function () {
+                                if (_that.time > 0) {
+                                    _that.time--;
+                                    _that.setCookie('cookieTime', _that.time, _that.time);
+                                    el.target.innerHTML = _that.time + '秒后重试'
+                                }
+                                if (_that.time === 0) {
+                                    _that.time = 10;
+                                    _that.isCode = false;
+                                    clearInterval(t);       //停止计时器
+                                    el.target.innerHTML = '重获验证码'
+                                }
+                            }, 1000)
+                        }, err => {
+                        });
+
+                    }
+                }
+            },
             changePassword(){
                 var reg = /^[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、0-9a-zA-Z]+$/;
                 var num = false,Capital = false,Lowercase = false,specail = false ;
                 if(reg.test(this.password)){
-                    var reg1 = /^[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]+$/;
-                    var reg2 = /^[a-z]+$/;
-                    var reg3 = /^[A-Z]+$/;
-                    var reg4 = /^[0-9]+$/;
-                    var passWord = [];
-                     passWord = this.password.split('');
-                    for(var i=0;i<passWord.length;i++){
-                        if(reg1.test(passWord[i])){
-                            specail = true;
+                    if(this.password.length>7){
+                        var reg1 = /^[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]+$/;
+                        var reg2 = /^[a-z]+$/;
+                        var reg3 = /^[A-Z]+$/;
+                        var reg4 = /^[0-9]+$/;
+                        var passWord = [];
+                        passWord = this.password.split('');
+                        for(var i=0;i<passWord.length;i++){
+                            if(reg1.test(passWord[i])){
+                                specail = true;
+                            }
+                            if(reg2.test(passWord[i])){
+                                Lowercase = true;
+                            }
+                            if(reg3.test(passWord[i])){
+                                Capital = true;
+                            }
+                            if(reg4.test(passWord[i])){
+                                num = true;
+                            }
                         }
-                        if(reg2.test(passWord[i])){
-                            Lowercase = true;
+                        if((num&&!Capital&&!Lowercase&&!specail) || (!num&&Capital&&!Lowercase&&!specail) || (!num&&!Capital&&Lowercase&&!specail)|| (!num&&!Capital&&!Lowercase&&specail)){
+                            this.isLower = true;
+                            this.isMiddle = false;
+                            this.isHeight = false;
                         }
-                        if(reg3.test(passWord[i])){
-                            Capital = true;
+                        if((!num&&!Capital&&Lowercase&&specail) || (!num&&Capital&&!Lowercase&&specail) || (!num&&Capital&&Lowercase&&!specail)|| (num&&!Capital&&!Lowercase&&specail)|| (num&&!Capital&&Lowercase&&!specail)|| (num&&Capital&&!Lowercase&&!specail)){
+                            this.isMiddle = true;
+                            this.isLower = false;
+                            this.isHeight = false;
                         }
-                        if(reg4.test(passWord[i])){
-                            num = true;
+                        if((!num&&Capital&&Lowercase&&specail) || (num&&!Capital&&Lowercase&&specail) || (num&&Capital&&!Lowercase&&specail)|| (num&&Capital&&Lowercase&&!specail)|| (num&&Capital&&Lowercase&&specail)){
+                            this.isHeight = true;
+                            this.isLower = false;
+                            this.isMiddle = false;
                         }
+                    }else{
+                        this.isMiddle = false;
+                        this.isLower = false;
+                        this.isHeight = false;
                     }
-                    if((num&&!Capital&&!Lowercase&&!specail) || (!num&&Capital&&!Lowercase&&!specail) || (!num&&!Capital&&Lowercase&&!specail)|| (!num&&!Capital&&!Lowercase&&specail)){
-                        alert(1)
-                    }
-                    if((!num&&!Capital&&Lowercase&&specail) || (!num&&Capital&&!Lowercase&&specail) || (!num&&Capital&&Lowercase&&!specail)|| (num&&!Capital&&!Lowercase&&specail)|| (num&&!Capital&&Lowercase&&!specail)|| (num&&Capital&&!Lowercase&&!specail)){
-                        alert(2)
-                    }
-                    if((!num&&Capital&&Lowercase&&specail) || (num&&!Capital&&Lowercase&&specail) || (num&&Capital&&!Lowercase&&specail)|| (num&&Capital&&Lowercase&&!specail)|| (num&&Capital&&Lowercase&&specail)){
-                        alert(3)
-                    }
+                }else{
+                    this.isMiddle = false;
+                    this.isLower = false;
+                    this.isHeight = false;
                 }
             },
             goRegister(){
@@ -244,17 +403,48 @@
                 this.$router.push({'path':'/'})
             },
             submit(){
-                // var reg= /^([0-9]+[a-zA-Z]+[_|\-]?$)|^[a-zA-Z_\-]+$|^[a-zA-Z_\-]+$/ ;
-                // var reg= /^([0-9]+[a-zA-Z])|^([0-9a-zA-Z_|\-]+$)|^([a-zA-Z_|\-]+$)|^([a-zA-Z]+$)/ ;
-                // var reg=/^((?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{4,20}$)/;//数字和字母的组合
-                var reg=/^((?![0-9_|\-]+$)(?![a-zA-Z]+$)[0-9A-Za-z_|\-]{4,20}$)/;//数字字母—组合
-                // var reg=/^((?![_|\-]+$)(?![a-zA-Z]+$)[a-zA-Z_|\-]{4,20}$)/;//—和字母的组合
-                // var reg=/^[a-zA-Z]{4,20}$/;//字母的组合
-                // var reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{4,20}$|^(?![0-9_|\-]+$)(?![a-zA-Z]+$)[0-9A-Za-z_|\-]{4,20}$|^((?![_|\-]+$)(?![a-zA-Z]+$)[a-zA-Z_|\-]{4,20}$)|^[a-zA-Z]{4,20}$/
-                console.log(this.name)
-                console.log(reg.test(this.name))
-                if(!reg.test(this.name)){
-                    alert(4444)
+                if(!this.name){
+                    this.validateName = true;
+                    this.$message.error('请设置登录名')
+                    return
+                }
+                var reg = /^[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、0-9a-zA-Z]+$/;
+                if(!reg.test(this.password)){
+                    this.$message.error('请输入正确格式的密码')
+                    return
+                }
+                if(this.password.length<8 || this.password.length>20){
+                    this.$message.error('请输入正确格式的密码')
+                    return
+                }
+                if(!this.repassword || (this.repassword != this.password)){
+                    this.validatepassword = true;
+                    this.$message.error('请再次输入密码')
+                    return
+                }
+                if(!this.phone || this.validatephone){
+                    this.validatephone = true;
+                    this.$message.error('请输入手机号')
+                    return
+                }
+                if(!this.verticalcode){
+                    this.$message.error('请输入验证码')
+                    return
+                }
+                if(!this.selectPass){
+                    this.$message.error('请勾选协议条款')
+                    return
+                }
+                if(!this.validateName&&!this.validatephone && !this.validatepassword && this.verticalcode){
+                    Service.login().register({
+                        username: this.name,
+                        phone: this.phone,
+                        code: this.verticalcode,
+                        password: this.password
+                    }).then(response => {
+
+                    }, err => {
+                    });
                 }
             }
         }
