@@ -102,7 +102,7 @@
             <div class="saveClass">
                 <div class="classTitle font16">研学旅行 </div>
                 <div class="classContent contaner clear">
-                    <div v-for="(item,index) in yanxueData.siteSafeSchool" class="classContentboxone cursor fl" @click="goVideoDetail(item.id)">
+                    <div v-for="(item,index) in yanxueData.siteSafeSchool" class="classContentboxone cursor fl" @click="goVideoDetail(item.vid)">
                         <div class="classBox">
                             <img :src="item.pictureurl">
                             <i class="mod_cover__mask"></i>
@@ -115,7 +115,7 @@
         <div class="saveClass">
             <div class="classTitle">运动</div>
             <div class="classContent contaner clear">
-                <div v-for="(item,index) in sportData.siteSafeSchool" class="classContentboxone cursor fl" @click="goVideoDetail(item.id)">
+                <div v-for="(item,index) in sportData.siteSafeSchool" class="classContentboxone cursor fl" @click="goVideoDetail(item.vid)">
                     <div class="classBox">
                         <img :src="item.pictureurl">
                         <i class="mod_cover__mask"></i>
@@ -128,7 +128,7 @@
         <div class="saveClass" >
             <div class="classTitle">其他</div>
             <div class="classContent contaner clear">
-                <div v-for="(item,index) in otherData.siteSafeSchool" class="classContentboxone cursor fl" @click="goVideoDetail(item.id)">
+                <div v-for="(item,index) in otherData.siteSafeSchool" class="classContentboxone cursor fl" @click="goVideoDetail(item.vid)">
                     <div class="classBox">
                         <img :src="item.pictureurl">
                         <i class="mod_cover__mask"></i>

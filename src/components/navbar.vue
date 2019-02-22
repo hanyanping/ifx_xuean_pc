@@ -79,7 +79,7 @@
     <div>
         <div class="contaner">
             <div class="navbar clear">
-                    <div class="logo fl">
+                    <div class="logo fl" @click="goHome()">
                         <img src="../assets/images/yanxuelogo.png">
                     </div>
                     <ul id="main" class="fl">
@@ -87,7 +87,7 @@
                             <router-link @click.native="changeRouter(item,index)"  :to="item.router">{{item.name}}</router-link>
                         </li>
                     </ul>
-                <div class="topRight fr">
+                <div class="topRight fr" >
                     <div class="rightIcon wxIcon">
                         <i class='iconGreen iconfont icon-weixin'></i>
                         <span class="iconText">微信公众号</span>
@@ -96,10 +96,12 @@
                         <i class='iconGreen iconfont icon-wenti'></i>
                         <span class="iconText">帮助中心</span>
                     </div>
-                    <div class="rightIcon">
-                        <span class='iconGreen iconfont icon-weidenglu'></span>
-                        <span @click="goLogin()" class="iconText">登陆 | </span>
-                        <span @click="goRegister()" class="iconText">注册</span>
+                    <div class="rightIcon" v-if="hasData">
+                        <span v-if="hasUserinfo" class='iconGreen iconColor iconfont icon-weidenglu' @click="goInfo()"></span>
+                        <span v-if="hasUserinfo" class="iconText iconColor" @click="goInfo()">{{username}}</span>
+                        <span v-if="!hasUserinfo" class='iconGreen iconfont icon-weidenglu'></span>
+                        <span v-if="!hasUserinfo" @click="goLogin()" class="iconText">登陆 | </span>
+                        <span v-if="!hasUserinfo" @click="goRegister()" class="iconText">注册</span>
                     </div>
                 </div>
             </div>
@@ -111,11 +113,15 @@
 </template>
 
 <script>
+    import Service from '../common/service'
     export default {
         name: "navbar",
         data() {
             return{
+                hasData: false,
+                hasUserinfo: '',
                 url: '',
+                username: '',
                 routerData:[{
                     name:'首页',
                     router:'/homepage',
@@ -144,8 +150,28 @@
             }
         },
         created(){
+            this.getInfo()
         },
         methods: {
+            goInfo(){
+                this.$router.push({path: '/bachomepage'})
+            },
+            getInfo (){
+                Service.login().getInfo({
+                }).then(response => {
+                    this.hasData = true;
+                    if(response.errorCode == 0){
+                        this.username = response.data.username;
+                        this.hasUserinfo = true;
+                    }else{
+                        this.hasUserinfo = false;
+                    }
+                }, err => {
+                });
+            },
+            goHome(){
+                this.$router.push({path:"/"})
+            },
             goRegister(){
                 this.$router.push({'path':'/register'})
             },

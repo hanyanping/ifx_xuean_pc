@@ -213,8 +213,6 @@
                         }else{
                             $(".wxIcon").css({"display":"none"});
                         }
-                        $(".helpIcon").find("span")[0].className = 'iconText';
-                        $(".helpIcon").find("i")[0].className = 'iconGreen iconfont icon-wenti';
                         liData[i].className = 'fl selectActive'
                     }
                 }

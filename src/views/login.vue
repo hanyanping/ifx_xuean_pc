@@ -179,7 +179,7 @@
                             <i class="iconfont icon-checked cursor" @click='selectPass = !selectPass' v-if="selectPass"></i>
                             <span>记住密码</span>
                         </div>
-                        <!--<div class="passRight">找回密码</div>-->
+                        <div class="passRight cursor"  @click="goFindPassword()">找回密码</div>
                     </div>
                     <div class="inputBox">
                         <span class="login cursor" @click='goLogin()'>登录</span>
@@ -212,7 +212,7 @@ import Util from '../common/util'
                 passLen: 0,
                 userName: '',
                 userPassword: '',
-                selectPass: true,
+                selectPass: false,
                 showPass: false,
                 sha256: ''
             }
@@ -236,6 +236,14 @@ import Util from '../common/util'
             }
         },
         methods: {
+            goFindPassword(){
+                if(this.userName == ''){
+                    this.$message.error("请输入用户名")
+                }else{
+                    var name = encodeURI(this.userName);
+                    this.$router.push({'path':'/findpassword/3',query:{name:name}})
+                }
+            },
             goLogin(){
                 var reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{4,20}$|^(?![0-9_|\-]+$)(?![a-zA-Z]+$)[0-9A-Za-z_|\-]{4,20}$|^((?![_|\-]+$)(?![a-zA-Z]+$)[a-zA-Z_|\-]{4,20}$)|^[a-zA-Z]{4,20}$/
                 if(this.userName.length<4 ||  this.userName.length>20){
@@ -248,11 +256,11 @@ import Util from '../common/util'
                 }
                 var reg1 = /^[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、0-9a-zA-Z]+$/;
                 if(!reg1.test(this.userPassword)){
-                    this.$message.error('请输入正确的密码')
+                    this.$message.error('请输入正确的密码');
                     return
                 }
                 if(this.userPassword.length<8 || this.userPassword.length>20){
-                    this.$message.error('请输入正确的密码')
+                    this.$message.error('请输入正确的密码');
                     return
                 }
                  if(this.selectPass){
@@ -263,15 +271,17 @@ import Util from '../common/util'
                 }else{
                      Util.localStorageUtil.clear('userInfo',userInfo)
                  }
+                var userPassword = this.sha256(this.userPassword);
                 Service.login().login({
                     username: this.userName,
-                    password: this.userPassword
+                    password: userPassword
                 }).then(response => {
                     if(response.errorCode == 0){
+                        Util.localStorageUtil.set('token',response.data.token)
                         if(this.$route.query.callback){
                             this.$router.push({'path':decodeURI(this.$route.query.callback)})
                         }else{
-                            // this.$router.push({'path':'/'})
+                            this.$router.push({'path':'/'})
                         }
                     }else{
                         this.$message.error(response.message);

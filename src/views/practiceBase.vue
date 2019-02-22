@@ -1,9 +1,9 @@
 <style rel="stylesheet/scss" lang="scss"  scoped>
-    .researchStudy{
+    .practicebase{
         background: #ececec;
         height: 100%;
     }
-    .researchStudyContent{
+    .practicebaseContent{
         .back{
             width: 100%;
             height: 257px;
@@ -135,34 +135,31 @@
                             }
                         }
                     }
-                    .xianzhangone{
-                        .flex:nth-last-child(1){
-                            .xianzhongMoney{
-                                .xianzhongMoney0{
-                                    border-bottom: solid 1px #fe776a;
-                                    border-radius: 0 0 10px 10px;
-                                }
-                                .xianzhongMoney1{
-                                    border-bottom: solid 1px #faa41b;
-                                    border-radius: 0 0 10px 10px;
-                                }
-                                .xianzhongMoney2{
-                                    border-bottom: solid 1px #057fad;
-                                    border-radius: 0 0 6px 6px;
-                                }
+                    .xianzhangone:nth-last-child(1){
+                        .xianzhongMoney{
+                            .xianzhongMoney0{
+                                border-bottom: solid 1px #fe776a;
+                                border-radius: 0 0 10px 10px;
+                            }
+                            .xianzhongMoney1{
+                                border-bottom: solid 1px #faa41b;
+                                border-radius: 0 0 10px 10px;
+                            }
+                            .xianzhongMoney2{
+                                border-bottom: solid 1px #057fad;
+                                border-radius: 0 0 6px 6px;
                             }
                         }
                     }
-
                 }
             }
         }
     }
 </style>
 <template>
-    <div class="researchStudy">
+    <div class="practicebase">
         <practicetab></practicetab>
-        <div class="researchStudyContent">
+        <div class="practicebaseContent">
             <div class="back">
                 <div class="contaner backText">
                 </div>
@@ -222,27 +219,23 @@
     import practicetab from '@/components/practicetab'
     import makeappoint from '@/components/makeappoint'
     import Service from '../common/service'
-    import Util from '../common/util'
     export default {
-        name: "researchStudy",
+        name: "studybase",
         components: {
             practicetab,
             makeappoint,
         },
         data() {
             return{
+                url: '',
+                showAppiont: false,
                 isshowMore: false,
                 showLoading: true,
                 busy: false,
                 pages: 1,
                 pageSizes: 4,
                 id: '',
-                tabData: [],
-                userId: '',
-                showAppiont: false,
-                listData: [
-                    ],
-                url: '',
+                listData: [],
                 routerData:[{
                     name:'首页',
                     router:'/homepage',
@@ -270,44 +263,15 @@
                 }]
             }
         },
-        created(){
-            if(Util.localStorageUtil.get('practab')){
-                this.tabData = Util.localStorageUtil.get('practab');
-                this.id = this.tabData[0].productcategoryList[0].id;
-            }else{
-                this.getTab()
-            }
-        },
         mounted(){
+            this.id = this.$route.query.id;
             this.url = window.location.href;
             this.changeRouter();
             this.getList(false)
         },
         methods:{
-            getTab(){
-                Service.product().getProductCategoryList({parentId:2
-                }).then(response => {
-                    if(response.errorCode == 0){
-                        response.data[0].router = '/researchStudy';
-                        response.data[1].router = '/practiceBase';
-                        for(var i=0;i<response.data.length;i++){
-                            response.data[i].showMenu = false;
-                        }
-                        response.data[0].productcategoryList[0].router = '/researchStudy';
-                        response.data[0].productcategoryList[1].router = '/studybase';
-                        response.data[1].productcategoryList[0].router = '/practiceBase';
-                        response.data[0].productcategoryList[1].router = '/studybase';
-                        response.data[0].productcategoryList[0].showMenuList = false;
-                        response.data[0].productcategoryList[1].showMenuList = false;
-                        response.data[1].productcategoryList[0].showMenuList = false;
-                        this.tabData = response.data;
-                        this.id = this.tabData[0].productcategoryList[0].id;
-                        Util.localStorageUtil.set('practab',response.data)
-                    }else{
-                        this.$message.error(response.message);
-                    }
-                }, err => {
-                });
+            changeshowAppiont(val){
+                this.showAppiont = val
             },
             getInfo(id){
                 Service.login().getInfo({
@@ -332,6 +296,7 @@
                 }, 500);
             },
             getList(flag){
+
                 Service.product().getProductInfoListByCategory({
                     categoryId: this.id,
                     page: this.pages,
@@ -371,26 +336,16 @@
             goToubao(id){
                 this.getInfo(id)
             },
-            changeshowAppiont(val){
-                this.showAppiont = val
-            },
             changeRouter(){
                 var liData = $("#main")[0].children;
                 for(var i=0;i<this.routerData.length;i++){
                     liData[i].className = 'fl';
-                    if(this.url.indexOf(this.routerData[i].router)>0){
-                        if(i == 0){
-                            $(".wxIcon").css({"display":"inline-block"});
-                        }else{
-                            $(".wxIcon").css({"display":"none"});
-                        }
-                        $(".helpIcon").find("span")[0].className = 'iconText';
-                        $(".helpIcon").find("i")[0].className = 'iconGreen iconfont icon-wenti';
-                        liData[i].className = 'fl selectActive'
-                    }
+                    $(".wxIcon").css({"display":"none"});
+                    $(".helpIcon").find("span")[0].className = 'iconText';
                 }
                 $(".helpIcon").find("span")[0].className = 'iconText';
                 $(".helpIcon").find("i")[0].className = 'iconGreen iconfont icon-wenti';
+                liData[2].className = 'fl selectActive'
             },
         }
     }

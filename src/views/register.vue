@@ -191,12 +191,10 @@
                     <div class="inputBox">
                         <input class="inputText" v-model="repassword" @change="watchPassword()" type="password" placeholder="请再次输入您的密码">
                         <div class="warmBox" v-if="validatepassword"><span class="warmText" >密码不一致</span></div>
-
                     </div>
                     <div class="inputBox">
                         <input class="inputText" v-model='phone' type="text" @change="watchPhone()" placeholder="请输入手机号码">
                         <div class="warmBox" v-if="validatephone"><span class="warmText" >请输入正确的手机号</span></div>
-
                     </div>
                     <div class="inputBox">
                         <input class="verification" v-model="verticalcode" type="text" placeholder="请输入验证码">
@@ -258,7 +256,18 @@
 
           }
         },
-        methods: {
+        beforeDestroy(){
+            this.delCookie('cookieTime');
+        },
+        methods:{
+            delCookie(key) {
+                var date = new Date();
+                date.setTime(date.getTime() - 1);
+                var delValue = this.getCookie(key);
+                if (!!delValue) {
+                    document.cookie = key+'='+delValue+';expires='+date.toGMTString();
+                }
+            },
             watchPassword(){
                 if(this.repassword != this.password){
                     this.validatepassword = true;
@@ -284,7 +293,6 @@
                 }else{
                     this.validateName = true;
                 }
-
             },
             setCookie(name, value, day) {
                 //当设置的时间等于0时，不设置expires属性，cookie在浏览器关闭后删除
@@ -307,14 +315,8 @@
                     this.$message.error('请输入正确手机号！');
                     return false
                 } else {
+                    this.time = '60'
                     let _that = this;
-                    var c = document.cookie.indexOf("cookieTime=");
-
-                    if (c != -1) {
-                        this.time = this.getCookie('cookieTime');
-                    } else {
-                        this.time = '60'
-                    }
                     if (this.time >= 0 && this.isCode) {
                         this.time = '60';
                         return false
@@ -323,25 +325,29 @@
                         Service.login().getCode({
                             phone: this.phone
                         }).then(response => {
-                            clearInterval(t);       //停止计时器
-                            el.target.innerHTML = _that.time + '秒后重试';
-                            this.isCode = true;
-                            var t = setInterval(function () {
-                                if (_that.time > 0) {
-                                    _that.time--;
-                                    _that.setCookie('cookieTime', _that.time, _that.time);
-                                    el.target.innerHTML = _that.time + '秒后重试'
-                                }
-                                if (_that.time === 0) {
-                                    _that.time = 10;
-                                    _that.isCode = false;
-                                    clearInterval(t);       //停止计时器
-                                    el.target.innerHTML = '重获验证码'
-                                }
-                            }, 1000)
+                            if(response.errorCode == 0){
+                                clearInterval(t);       //停止计时器
+                                el.target.innerHTML = _that.time + '秒后重试';
+                                this.isCode = true;
+                                var t = setInterval(function () {
+                                    if (_that.time > 0) {
+                                        _that.time--;
+                                        el.target.innerHTML = _that.time + '秒后重试'
+                                    }
+                                    if (_that.time === 0) {
+                                        _that.time = 60;
+                                        _that.isCode = false;
+                                        clearInterval(t);       //停止计时器
+                                        el.target.innerHTML = '重获验证码'
+                                    }
+                                }, 1000)
+                            }else{
+                                _that.time = 60;
+                                _that.isCode = false;
+                            }
+
                         }, err => {
                         });
-
                     }
                 }
             },
@@ -387,7 +393,7 @@
                         }
                     }else{
                         this.isMiddle = false;
-                        this.isLower = false;
+                        this.isLower = true;
                         this.isHeight = false;
                     }
                 }else{
@@ -397,9 +403,11 @@
                 }
             },
             goRegister(){
+                this.delCookie('cookieTime');
                 this.$router.push({'path':'/register'})
             },
             goHome(){
+                this.delCookie('cookieTime');
                 this.$router.push({'path':'/'})
             },
             submit(){
@@ -413,8 +421,12 @@
                     this.$message.error('请输入正确格式的密码')
                     return
                 }
-                if(this.password.length<8 || this.password.length>20){
+                if(this.isLower){
                     this.$message.error('请输入正确格式的密码')
+                    return
+                }
+                if(this.password.length<8 || this.password.length>20){
+                    this.$message.error('为保障你的账户安全，密码位数请至少设置6位数！')
                     return
                 }
                 if(!this.repassword || (this.repassword != this.password)){
@@ -442,7 +454,9 @@
                         code: this.verticalcode,
                         password: this.password
                     }).then(response => {
-
+                        if(response.errorCode==0){
+                            this.delCookie('cookieTime');
+                        }
                     }, err => {
                     });
                 }

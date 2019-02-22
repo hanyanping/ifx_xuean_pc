@@ -55,25 +55,42 @@
 </template>
 
 <script>
+    import Service from '../common/service'
+    import Util from '../common/util'
     export default {
         name: "traintab",
         data() {
             return {
                 selectId: '',
                 url: '',
-                tabData:[{'name':'校园安全',router:'/schoolsafe'},{'name':'师资培训',router:'/teachertrain'}],
+                tabData:[],
             }
         },
         created(){
-            this.url = window.location.href;
-            for(var i=0;i<this.tabData.length;i++){
-                if(this.url.indexOf(this.tabData[i].router)>0){
-                    this.selectId = i;
-                }
-            }
+            this.getTab()
+
         },
 
         methods: {
+            getTab(){
+                Service.product().getProductCategoryList({parentId:1
+                }).then(response => {
+                    if(response.errorCode == 0){
+                        response.data[0].router = '/schoolsafe'
+                        response.data[1].router = '/teachertrain';
+                        this.tabData = response.data;
+                        this.url = window.location.href;
+                        for(var i=0;i<this.tabData.length;i++){
+                            if(this.url.indexOf(this.tabData[i].router)>0){
+                                this.selectId = i;
+                            }
+                        }
+                    }else{
+                        this.$message.error(response.message);
+                    }
+                }, err => {
+                });
+            },
             jumpRouter(item,index){
                 this.selectId = index;
                 this.$forceUpdate()

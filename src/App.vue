@@ -58,6 +58,18 @@ export default {
 .swiper-pagination-bullet-active{
     background-color: #fff;
 }
+.el-date-editor.el-input, .el-date-editor.el-input__inner{
+    width:100%;
+}
+.el-input__icon{
+    display: none;
+}
+.el-tabs__nav-prev{
+    display: none;
+}
+.el-tabs__nav-next{
+    display: none;
+}
 .el-input__inner{
     padding: 0;
     border-radius: 0;
@@ -66,6 +78,10 @@ export default {
 }
 .el-select-dropdown__item.selected{
     color: #45b8c8;
+}
+.el-input--prefix .el-input__inner{
+    padding-left: 10px;
+    color: #000;
 }
 .el-message-box__message p{
     color: #3d3d3d;

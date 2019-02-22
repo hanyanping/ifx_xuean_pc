@@ -76,8 +76,8 @@
                     </div>
                     <div :id="'listMenu'+index" class="ulBox" style="display: none;" @mouseenter="inStyle(item,'listMenu'+index,index)">
                         <ul class="menuUl">
-                            <li class="menuItem cursor" v-for="(ite,inde) in item.childData">
-                                <router-link :class="ite.showMenuList?'activeMenu':''"  @click.native="jumpRouter('listMenu'+index,index)"  :to="ite.router">{{ite.lable}}</router-link>
+                            <li class="menuItem cursor" v-for="(ite,inde) in item.productcategoryList">
+                                <router-link :class="ite.showMenuList?'activeMenu':''"  @click.native="jumpRouter('listMenu'+index,index)"  :to="{path:ite.router,query: {id: ite.id}}">{{ite.name}}</router-link>
                             </li>
                         </ul>
                     </div>
@@ -89,37 +89,56 @@
 </template>
 
 <script>
+    import Service from '../common/service'
+    import Util from '../common/util'
     export default {
         name: "practicetab",
         data(){
             return{
                 tabData:[
-                    {
-                        name:'研学旅行',
-                        router: '/researchStudy',
-                        showMenu: false,
-                        childData:[{value:'0',lable:'组织方',router:'/researchStudy',showMenuList: false},
-                        {value:'1',lable:'研学基地',router:'/studybase',showMenuList: false}]
-                    },
-                    {
-                        name:'社会实践',
-                        router: '/socialpractice',
-                        showMenu: false,
-                        childData:[{value:'0',lable:'社会实践',router:'/socialpractice',showMenuList: false}]
-                    }
                 ]
             }
         },
         created(){
             this.url = window.location.href;
-            console.log(this.url)
-            this.changeColor()
+            if(Util.localStorageUtil.get('practab')){
+                this.tabData = Util.localStorageUtil.get('practab')
+                this.changeColor()
+            }else{
+                this.getTab()
+            }
+            console.log(this.tabData)
         },
         methods: {
+            getTab(){
+                Service.product().getProductCategoryList({parentId:2
+                }).then(response => {
+                    if(response.errorCode == 0){
+                        response.data[0].router = '/researchStudy';
+                        response.data[1].router = '/practiceBase';
+                        for(var i=0;i<response.data.length;i++){
+                            response.data[i].showMenu = false;
+                        }
+                        response.data[0].productcategoryList[0].router = '/researchStudy';
+                        response.data[0].productcategoryList[1].router = '/studybase';
+                        response.data[1].productcategoryList[0].router = '/practiceBase';
+                        response.data[0].productcategoryList[1].router = '/studybase';
+                        response.data[0].productcategoryList[0].showMenuList = false;
+                        response.data[0].productcategoryList[1].showMenuList = false;
+                        response.data[1].productcategoryList[0].showMenuList = false;
+                        this.tabData = response.data;
+                        Util.localStorageUtil.set('practab',response.data)
+                        this.changeColor()
+                    }else{
+                        this.$message.error(response.message);
+                    }
+                }, err => {
+                });
+            },
             changeColor(){
                 for(let i=0;i< this.tabData.length;i++){
                     this.tabData[i].showMenu = false;
-                    for(let ite of this.tabData[i].childData){
+                    for(let ite of this.tabData[i].productcategoryList){
                         ite.showMenuList = false;
                         if(this.url.indexOf(ite.router)>0){
                             this.tabData[i].showMenu = true;
@@ -148,7 +167,7 @@
                 }
                 for(let i=0;i< this.tabData.length;i++){
                     this.tabData[i].showMenu = false;
-                    for(let ite of this.tabData[i].childData){
+                    for(let ite of this.tabData[i].productcategoryList){
                         ite.showMenuList = false;
                         if(this.url.indexOf(ite.router)>0){
                             this.tabData[i].showMenu = true;

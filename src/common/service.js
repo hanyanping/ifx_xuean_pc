@@ -32,35 +32,25 @@ function errorState(response) {
     }
 
 }
-
 function successState(response) {
     // Store.commit("setIsLoading", false);
     //统一判断后端返回的错误码
     if (response.status == '200') {
-
         if (response.data.errorCode == 0) {
         } else if (response.data.errorCode == -1) {
 
         } else if (response.data.errorCode == 1) {
 
         } else if (response.data.errorCode == 5001) {
-            Util.localStorageUtil.clear('access_token');
-            Util.localStorageUtil.clear('userInfo');
-            var signUrl = window.location.href;
-            if (signUrl.indexOf('code') > 0) {
-                signUrl = signUrl.substring(0, signUrl.indexOf('code'));
-            }
-            var linkUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + Global.weixinInfo.appId + '&redirect_uri=' + encodeURIComponent(signUrl) + '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
-            console.log(linkUrl)
-            window.location.href = linkUrl;
+            // Util.localStorageUtil.clear('token');
         }
     } else {
     }
 }
 const getResource = (opts, data) => {
-    var tokenVal = Util.localStorageUtil.get('access_token');
-    if (opts.url.indexOf('wx/jsapi/sign') >= 0 || (opts.url.indexOf('/usr/user/wechat/login') >= 0)) {
-        tokenVal = '';
+    var tokenVal = '';
+    if(Util.localStorageUtil.get('token')){
+        tokenVal = Util.localStorageUtil.get('token')
     }
     let httpDefaultOpts = { //http默认配置
         method: opts.method,
@@ -109,24 +99,92 @@ export default {
     login() {
         // 登录
         return{
-            getCode: function (data) {//法律援助列表
+            logout: function (data) {//退出
+                return getResource({
+                    url: '/xunan/enterprise/account/logout',
+                    method: 'post'
+                }, data)
+            },
+            getCode: function (data) {//注册手机验证码
                 return getResource({
                     url: '/xunan/enterprise/account/reg/code',
                     method: 'post'
                 }, data)
             },
-            register: function (data) {//法律援助列表
+            getnewCode: function (data) {//修改手机获取验证码
+                return getResource({
+                    url: '/xunan/enterprise/account/phone/new/code',
+                    method: 'post'
+                }, data)
+            },
+            resetnewPhone: function (data) {//验证修改手机
+                return getResource({
+                    url: '/xunan/enterprise/account/phone/new/reset',
+                    method: 'post'
+                }, data)
+            },
+            register: function (data) {//注册
                 return getResource({
                     url: '/xunan/enterprise/account/reg',
                     method: 'post'
                 }, data)
             },
-            login: function (data) {//法律援助列表
+            login: function (data) {//登陆
                 return getResource({
                     url: '/xunan/enterprise/account/login',
                     method: 'post'
                 }, data)
             },
+            oldPhoneCode: function (data) {//获取旧手机验证码（修改手机号）
+                return getResource({
+                    url: '/xunan/enterprise/account/phone/old/code',
+                    method: 'post'
+                }, data)
+            },
+
+            getnameCode: function (data) {//获取旧手机验证码(找回密码或者重置密码)
+                return getResource({
+                    url: '/xunan/enterprise/account/password/code/send',
+                    method: 'post'
+                }, data)
+            },
+            verifioldPhone: function (data) {//验证旧手机验证码
+                return getResource({
+                    url: '/xunan/enterprise/account/password/code/verify',
+                    method: 'post'
+                }, data)
+            },
+            verifioldPhonecode: function (data) {//验证旧手机验证码（修改手机号）
+                return getResource({
+                    url: '/xunan/enterprise/account/phone/old/verify',
+                    method: 'post'
+                }, data)
+            },
+            check: function (data) {//验证是否登陆
+                return getResource({
+                    url: '/xunan/enterprise/account/password/check',
+                    method: 'post'
+                }, data)
+            },
+            getInfo: function (data) {//获取个人信息
+                return getResource({
+                    url: '/xunan/enterprise/account/login/info',
+                    method: 'GET'
+                }, data)
+            },
+            changePassword: function (data) {//修改密码
+                return getResource({
+                    url: '/xunan/enterprise/account/password/reset',
+                    method: 'POST'
+                }, data)
+            },
+            nologinToken: function(data){
+                return getResource({
+                    url: '/xunan/enterprise/account/token',
+                    method: 'post'
+                }, data)
+            }
+
         }
     },
     helper(){
@@ -375,6 +433,22 @@ export default {
             getcountInfo: function (data) {
                 return getResource({
                     url: '/ord/order/count',
+                    method: 'get'
+                }, data)
+            },
+        }
+    },
+    product(){
+        return {
+            getProductCategoryList: function (data) {
+                return getResource({
+                    url: '/xunan/productInfo/getProductCategoryList',
+                    method: 'get'
+                }, data)
+            },
+            getProductInfoListByCategory: function (data) {//获取产品列表
+                return getResource({
+                    url: '/xunan/productInfo/getProductInfoListByCategory',
                     method: 'get'
                 }, data)
             },

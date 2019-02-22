@@ -20,6 +20,18 @@ import customermessage from '@/views/customermessage'
 import legaldetail from '@/views/legaldetail'
 import videoDetail from '@/views/videoDetail'
 import applicaninfo from '@/views/applicaninfo'
+import bachome from '@/views/bachome'
+import bachomepage from '@/views/bachomepage'
+import ordermanage from '@/views/ordermanage'
+import policymanage from '@/views/policymanage'
+import customermanage from '@/views/customermanage'
+import setup from '@/views/setup'
+import resetpassword from '@/views/resetpassword'
+import fillinpassword from '@/views/fillinpassword'
+import finishset from '@/views/finishset'
+import productdetail from '@/views/productdetail'
+import findpassword from '@/views/findpassword'
+import practiceBase from '@/views/practiceBase'
 Vue.use(Router)
 export default new Router({
     mode: 'history',
@@ -59,6 +71,11 @@ export default new Router({
                     path: 'socialpractice',
                     name: 'socialpractice',
                     component: socialpractice
+                },
+                {
+                    path: 'practiceBase',
+                    name: 'practiceBase',
+                    component: practiceBase
                 },
                 {
                     path: 'studybase',
@@ -104,6 +121,44 @@ export default new Router({
                     name: 'customermessage',
                     component: customermessage
                 },
+                {
+                    path: 'productdetail/:id',
+                    name: 'productdetail',
+                    component: productdetail
+                }
+            ]
+        },
+        {
+            path: '/bachome',
+            name: 'bachome',
+            component: bachome,
+            redirect: '/bachomepage',
+            children: [
+                {
+                    path: '/bachomepage',
+                    name: 'bachomepage',
+                    component: bachomepage
+                },
+                {
+                    path: '/ordermanage',
+                    name: 'ordermanage',
+                    component: ordermanage
+                },
+                {
+                    path: '/policymanage',
+                    name: 'policymanage',
+                    component: policymanage
+                },
+                {
+                    path: '/customermanage',
+                    name: 'customermanage',
+                    component: customermanage
+                },
+                {
+                    path: '/setup',
+                    name: 'setup',
+                    component: setup
+                },
             ]
         },
         {
@@ -125,8 +180,26 @@ export default new Router({
             path: '/applicaninfo',
             name: 'applicaninfo',
             component: applicaninfo
-        }
-
+        },
+        {
+            path: '/resetpassword/:id',
+            name: 'resetpassword',
+            component: resetpassword
+        },
+        {
+            path: '/fillinpassword/:id',
+            name: 'fillinpassword',
+            component: fillinpassword
+        },
+        {
+            path: '/finishset/:id',
+            name: 'finishset',
+            component: finishset
+        },
+        {
+            path: '/findpassword/:id',
+            name: 'findpassword',
+            component: findpassword
+        },
     ]
-
 })
